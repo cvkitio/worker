@@ -1,0 +1,54 @@
+{
+    "receivers" : [
+        {
+            "name": "example",
+            "type": "rtsp",
+            "url": "rtsp://user:password@192.168.88.69:554/stream1"
+        }
+    ],
+    "detections" : [
+        {
+            "name": "face_detector",
+            "type": "dlib",
+            "model": "yolov8n.pt",
+            "labels": ["person", "car", "truck"],
+            "threshold": 0.5,
+            "iou": 0.5,
+            "max_detections": 10
+        },
+        {
+            "name": "face_matcher",
+            "parent": "face_detector",
+            "type": "yolo",
+            "model": "yolov8n.pt",
+            "labels": ["person", "car", "truck"],
+            "threshold": 0.5,
+            "iou": 0.5,
+            "max_detections": 10
+        },
+        {
+            "name": "face_liveness",
+            "parent": "face_detector",
+            "type": "yolo",
+            "model": "yolov8n.pt",
+            "labels": ["person", "car", "truck"],
+            "threshold": 0.5,
+            "iou": 0.5,
+            "max_detections": 10
+        }
+    ],
+    "actions" : [
+        {
+            "name": "example",
+            "type": "http",
+            "url": "http://localhost:8080/notify",
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "body": {
+                "message": "{{message}}"
+            }
+        }
+    ]
+}

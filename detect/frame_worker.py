@@ -2,15 +2,19 @@
 import cv2
 import time
 
-class FrameWorker:
-    def __init__(self, receiver, detectors):
-        self.receiver = receiver
-        self.detectors = detectors
-        self.video_capture = None
-        self.load()
+from detect.loader import DetectorLoader
+from receiver.loader import ReceiverLoader
 
+class FrameWorker:
+    def __init__(self, config):
+        self.receiver_config = config["receivers"]
+        self.detectors = config["detectors"]
+        self.video_capture = None
+        self.receiver = None
+        
     def load(self):
         # Load the receiver configuration
+        self.receiver = ReceiverLoader(self.receiver_config)
         self.video_capture = self.receiver.get_video_capture()
         if not self.video_capture.isOpened():
             raise ValueError("Failed to open video capture")
@@ -23,6 +27,12 @@ class FrameWorker:
         return detectors
         
     def run(self):
+        self.load()
+        # Ideally what we want to do is have each type of detector already loaded
+        # and then we can just call detector.detect(frame)
+        detectors = self.get_root_detectors()
+        detector_runner = DetectorLoader(detectors)
+        
         last_processed_time = time.time()
         while self.video_capture.isOpened():
             ret, frame = self.video_capture.read()
@@ -30,11 +40,9 @@ class FrameWorker:
                 print("Failed to retrieve frame")
                 break
             
-            detectors = self.get_root_detectors()
+            
             elapsed_time = (time.time() - last_processed_time) * 1000  # Convert to milliseconds
             for detector in detectors:
-                # Process the frame with the detector
-                # For now, we will just print the detector name
                 if elapsed_time > float(detector["frequency_ms"]):
                     last_processed_time = time.time()
                     print(f"Processing with detector: {detector['name']}")

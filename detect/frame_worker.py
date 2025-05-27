@@ -6,11 +6,12 @@ from detect.loader import DetectorLoader
 from receiver.loader import ReceiverLoader
 
 class FrameWorker:
-    def __init__(self, config):
+    def __init__(self, config, queue):
         self.receiver_config = config["receivers"]
         self.detectors = config["detectors"]
         self.video_capture = None
         self.receiver = None
+        self.queue = queue
         
     def load(self):
         # Load the receiver configuration
@@ -27,6 +28,7 @@ class FrameWorker:
         return detectors
         
     def run(self):
+        print(f"FrameWorker started pid: {os.getpid()}")
         self.load()
         # Ideally what we want to do is have each type of detector already loaded
         # and then we can just call detector.detect(frame)
@@ -38,6 +40,7 @@ class FrameWorker:
             ret, frame = self.video_capture.read()
             if not ret:
                 print("Failed to retrieve frame")
+                # TODO add retry logic and then exit
                 break
             
             
@@ -45,7 +48,8 @@ class FrameWorker:
             for detector in detectors:
                 if elapsed_time > float(detector["frequency_ms"]):
                     last_processed_time = time.time()
-                    print(f"Processing with detector: {detector['name']}")
+                    self.queue.put(f"{detector['name']}")
+                    print(f"Sent to queue: {detector['name']}")
                     
 
             # Process the frame (e.g., run detection)
@@ -59,6 +63,7 @@ class FrameWorker:
 
     def unload(self):
         # Unload the receiver configuration
+        self.queue.put("STOP")
         if self.video_capture is not None:
             self.video_capture.release()
         cv2.destroyAllWindows()

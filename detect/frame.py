@@ -1,11 +1,16 @@
+from dataclasses import dataclass
 from detect.detectors.detector import Detector
+from typing import Any
 
+@dataclass
 class Frame:
-    def __init__(self, frame_id: int, frame: str, timestamp: float, detectors: list[Detector]):
-        self.frame_id = frame_id
-        self.frame = frame
-        self.timestamp = timestamp
-        self.detectors = detectors
+    frame_id: str
+    shape: tuple
+    frame_type: str
+    detector: str
+    timestamp: int
+    shared_memory_name: str
+    #shared_memory_lock: Any # Lock for accessing shared memory
 
     def __repr__(self):
         return f"Frame(frame_id={self.frame_id}, frame={self.frame})"

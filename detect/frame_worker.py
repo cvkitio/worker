@@ -73,7 +73,7 @@ class FrameWorker:
                         frame = cv2.resize(frame, (0, 0), fx=scale, fy=scale)
                     
                     # Copy frame to shared memory
-                    print(f"Worker: Frame shape: {frame.shape}, type: {frame.dtype}")
+                    #print(f"Worker: Frame shape: {frame.shape}, type: {frame.dtype}")
                     shm = shared_memory.SharedMemory(name=self.shared_memory_name)
                     shm_array = np.ndarray(frame.shape, dtype=frame.dtype, buffer=shm.buf)
                     np.copyto(shm_array, frame)
@@ -91,7 +91,7 @@ class FrameWorker:
                     
                     last_processed_time = time.time()
                     self.queue.put(frame_data)
-                    print(f"Sent to queue: {detector['name']}")
+                    #print(f"Sent to queue: {detector['name']}")
                     
 
             # Process the frame (e.g., run detection)

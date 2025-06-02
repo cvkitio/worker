@@ -3,12 +3,12 @@ import logging
 import os
 import time
 from pathlib import Path
+from loguru import logger
 
 logger = logging.getLogger(__name__)
 
 class FaceDetector(Detector):
     def __init__(self, detector_name: str):
-        #super().__init__()
         self.detector_name = detector_name
         self.detector_lib = None
         self.load()
@@ -18,34 +18,30 @@ class FaceDetector(Detector):
         if self.detector_name == "dlib":
             import dlib
             self.detector_lib = dlib.get_frontal_face_detector()
-            print(f"Loaded dlib face detector")
+            logger.info(f"Loaded dlib face detector. PID: {os.getpid()}")
         elif self.detector_name == "dlib_cnn":
             import dlib
-            self.detector_lib = dlib.cnn_face_detection_model_v1(
-                os.path.join(base_dir, "models", "mmod_human_face_detector.dat")
-        )
+            self.detector_lib = dlib.cnn_face_detection_model_v1("/Users/andrewsinclair/.cache/kagglehub/datasets/leeast/mmod-human-face-detector-dat/versions/1/mmod_human_face_detector.dat")
+            img = dlib.load_rgb_image("/Users/andrewsinclair/Desktop/id.png")
+            dets = self.detector_lib(img, 1)
+            logger.info(f"Loaded dlib_cnn face detector {len(dets)} faces detected. PID: {os.getpid()}")
         else:
+            logger.error(f"Unknown detector: {self.detector_name}. PID: {os.getpid()}")
             raise ValueError(f"Unknown detector: {self.detector_name}")
 
     def detect(self, frame):
         start = time.time()
-        print(f"Detecting faces using {self.detector_name} detector")
+        logger.info(f"Detecting faces using {self.detector_name} detector. PID: {os.getpid()}")
         match self.detector_name:
             case "dlib_cnn":
-                faces = self.detector_lib(frame, 1)  # dlib cnn
-                faces = [r.rect for r in faces]
+                logger.info("Using dlib_cnn face detector")
+                faces = self.detector_lib(frame, 0)
             case "yunet":
                 faces = self.detector_lib.detect(frame)
-                #for face in faces:
-                #    x, y, w, h = face[0], face[1], face[2], face[3]
             case "dlib":
-                print("Using dlib frontal face detector")
+                logger.info("Using dlib frontal face detector")
                 faces = self.detector_lib(frame, 0)
-                #for i, face in enumerate(faces):
-                #    x, y, w, h = face.left(), face.top(), face.width(), face.height()
-        
-        print(f"Face detection took {(time.time() - start) * 1000}ms")
-
+        logger.info(f"Face detection took {(time.time() - start) * 1000}ms. PID: {os.getpid()}")
         return faces
-    
+
 

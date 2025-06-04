@@ -1,9 +1,9 @@
-# The worker plugin is responsible for running the detection process in a separate process.
 from multiprocessing import Lock, shared_memory
 import cv2
 import time
 import os
 import numpy as np
+from loguru import logger
 
 from detect.loader import DetectorLoader
 from receiver.loader import ReceiverLoader
@@ -47,7 +47,7 @@ class FrameWorker:
         return frame
         
     def run(self):
-        print(f"FrameWorker started pid: {os.getpid()}")
+        logger.info(f"FrameWorker started pid: {os.getpid()}")
         self.load()
         # Ideally what we want to do is have each type of detector already loaded
         # and then we can just call detector.detect(frame)
@@ -58,7 +58,7 @@ class FrameWorker:
         while self.video_capture.isOpened():
             ret, frame = self.video_capture.read()
             if not ret:
-                print("Failed to retrieve frame")
+                logger.error(f"Failed to retrieve frame (PID: {os.getpid()})")
                 # TODO add retry logic and then exit
                 break
             
@@ -73,7 +73,7 @@ class FrameWorker:
                         frame = cv2.resize(frame, (0, 0), fx=scale, fy=scale)
                     
                     # Copy frame to shared memory
-                    #print(f"Worker: Frame shape: {frame.shape}, type: {frame.dtype}")
+                    logger.info(f"Worker: Frame shape: {frame.shape}, type: {frame.dtype} (PID: {os.getpid()})")
                     shm = shared_memory.SharedMemory(name=self.shared_memory_name)
                     shm_array = np.ndarray(frame.shape, dtype=frame.dtype, buffer=shm.buf)
                     np.copyto(shm_array, frame)
@@ -91,7 +91,7 @@ class FrameWorker:
                     
                     last_processed_time = time.time()
                     self.queue.put(frame_data)
-                    #print(f"Sent to queue: {detector['name']}")
+                    logger.info(f"Sent to queue: {detector['name']} (PID: {os.getpid()})")
                     
 
             # Process the frame (e.g., run detection)

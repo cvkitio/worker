@@ -1,4 +1,6 @@
 import cv2
+from loguru import logger
+import os
 
 
 class ReceiverLoader:
@@ -8,7 +10,7 @@ class ReceiverLoader:
         self.load()
 
     def load(self):
-        print(self.receivers)
+        logger.info(f"Receiver config: {self.receivers} (PID: {os.getpid()})")
         # Load the receiver configuration
         for config in self.receivers:
             if config["type"] == "rtsp":

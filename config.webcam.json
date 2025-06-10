@@ -1,0 +1,39 @@
+{
+    "receivers": [
+        {
+            "name": "webcam",
+            "type": "webcam",
+            "device_id": 0
+        }
+    ],
+    "preprocessors": [
+        {
+            "name": "example",
+            "type": "resize",
+            "width": 1152,
+            "height": 648
+        }
+    ],
+    "detectors": [
+        {
+            "name": "face_detector",
+            "type": "dlib_cnn",
+            "model": "yolov8n.pt",
+            "frequency_ms": 500.0
+        }
+    ],
+    "actions": [
+        {
+            "name": "example",
+            "type": "http",
+            "url": "http://localhost:8080/notify",
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "body": {
+                "message": "{{message}}"
+            }
+        }
+    ]
+}

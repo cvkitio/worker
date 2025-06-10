@@ -18,14 +18,14 @@ class ReceiverLoader:
                 self.video_capture = cv2.VideoCapture(config["url"])
             elif config["type"] == "http":
                 # Load HTTP receiver
-                #self.load_http_receiver(config)
+                # self.load_http_receiver(config)
                 pass
             else:
                 raise ValueError(f"Unknown receiver type: {config['type']}")
             # we will only deal with one receiver for now
             break
         pass
-    
+
     def get_video_capture(self):
         # Return the video capture object
         if self.video_capture is None:

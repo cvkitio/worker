@@ -10,7 +10,7 @@ class ConfigParser:
     def parse_config(self):
         with open(self.config_file, 'r') as file:
             self.config = json.load(file)
-    
+
     def get_config(self):
         return self.config
 

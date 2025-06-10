@@ -12,21 +12,83 @@ from .detectors.detect_worker import DetectWorker
 from .detectors.frame_worker import FrameWorker
 
 
+def create_webcam_config():
+    """Create a default configuration for webcam mode."""
+    webcam_config = {
+        "receivers": [
+            {
+                "name": "webcam",
+                "type": "webcam",
+                "device_id": 0
+            }
+        ],
+        "preprocessors": [
+            {
+                "name": "resize",
+                "type": "resize",
+                "width": 640,
+                "height": 480
+            }
+        ],
+        "detectors": [
+            {
+                "name": "face_detector",
+                "type": "dlib_cnn",
+                "frequency_ms": 500.0
+            }
+        ],
+        "actions": []
+    }
+    
+    # Create a simple config object that behaves like ConfigParser
+    class SimpleConfig:
+        def __init__(self, config_dict):
+            self.config = config_dict
+            
+        def get_config(self):
+            return self.config
+            
+        def get(self, key, default=None):
+            return self.config.get(key, default)
+    
+    logger.info("Created default webcam configuration:")
+    logger.info("  - Webcam input (device 0)")
+    logger.info("  - Face detection enabled")
+    logger.info("  - 640x480 processing resolution")
+    
+    return SimpleConfig(webcam_config)
+
+
 def main():
     """Main entry point."""
     logger.info(f"Main process started. PID: {os.getpid()}")
 
     parser = argparse.ArgumentParser(description="cvkit.io worker")
-    config_file = None
-    if os.getenv("CVKIT_CONFIG") is not None:
+    parser.add_argument('--config', type=str,
+                       help='Path to config file')
+    parser.add_argument('--webcam', action='store_true',
+                       help='Use webcam instead of config file (quick test mode)')
+    
+    args = parser.parse_args()
+    
+    # Determine config file
+    if args.webcam:
+        # Use webcam mode - create a temporary config
+        config_file = None
+        logger.info("Using webcam mode - creating temporary configuration")
+    elif args.config:
+        config_file = args.config
+    elif os.getenv("CVKIT_CONFIG") is not None:
         config_file = os.getenv("CVKIT_CONFIG")
     else:
-        parser.add_argument('--config', type=str,
-                           help='Path to config file', required=True)
-        args = parser.parse_args()
-        config_file = args.config
+        parser.error("Must specify either --config <file> or --webcam")
 
-    config_parser = ConfigParser(config_file)
+    # Create config parser
+    if args.webcam:
+        # Create a default webcam configuration
+        config_parser = create_webcam_config()
+    else:
+        config_parser = ConfigParser(config_file)
 
     with Manager() as manager:
         # Shared memory can be used to share data between processes

@@ -15,7 +15,27 @@ class ReceiverLoader:
         for config in self.receivers:
             if config["type"] == "rtsp":
                 # Load RTSP receiver
-                self.video_capture = cv2.VideoCapture(config["url"])
+                url = config["url"]
+                logger.info(f"Connecting to RTSP stream: {url}")
+                self.video_capture = cv2.VideoCapture(url)
+                
+                # Check if RTSP stream opened successfully
+                if not self.video_capture.isOpened():
+                    logger.error(f"Failed to connect to RTSP stream: {url}")
+                    raise ValueError(f"Could not connect to RTSP stream: {url}")
+                else:
+                    # Test reading a frame to verify stream is working
+                    # Give RTSP more time to connect
+                    import time
+                    time.sleep(2)  # Wait for RTSP connection to establish
+                    ret, test_frame = self.video_capture.read()
+                    if ret:
+                        logger.info(f"RTSP stream connected successfully: {url}")
+                        logger.info(f"Stream resolution: {test_frame.shape[1]}x{test_frame.shape[0]}")
+                    else:
+                        logger.error(f"RTSP stream opened but cannot read frames: {url}")
+                        self.video_capture.release()
+                        raise ValueError(f"RTSP stream cannot read frames: {url}")
             elif config["type"] == "webcam":
                 # Load webcam receiver
                 device_id = config.get("device_id", 0)  # Default to device 0

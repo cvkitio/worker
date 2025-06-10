@@ -1,0 +1,25 @@
+{
+    "receivers": [
+        {
+            "name": "bad_rtsp",
+            "type": "rtsp",
+            "url": "rtsp://invalid.camera.url:554/stream"
+        }
+    ],
+    "preprocessors": [
+        {
+            "name": "resize",
+            "type": "resize",
+            "width": 640,
+            "height": 480
+        }
+    ],
+    "detectors": [
+        {
+            "name": "face_detector",
+            "type": "dlib_cnn",
+            "frequency_ms": 500.0
+        }
+    ],
+    "actions": []
+}

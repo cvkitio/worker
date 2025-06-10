@@ -58,14 +58,33 @@ class FrameWorker:
         DetectorLoader(detectors)
 
         last_processed_time = time.time()
+        consecutive_failures = 0
+        max_failures = 5  # Allow 5 consecutive failures before giving up
+        
         while self.video_capture.isOpened():
             ret, frame = self.video_capture.read()
             if not ret:
-                logger.error(
-                    f"Failed to retrieve frame (PID: {os.getpid()})"
+                consecutive_failures += 1
+                logger.warning(
+                    f"Failed to retrieve frame (attempt {consecutive_failures}/{max_failures}) "
+                    f"(PID: {os.getpid()})"
                 )
-                # TODO: add retry logic and then exit
-                break
+                
+                if consecutive_failures >= max_failures:
+                    logger.error(
+                        f"Failed to read frames {max_failures} times consecutively. "
+                        f"Stopping frame worker. (PID: {os.getpid()})"
+                    )
+                    break
+                
+                # Wait a bit before trying again
+                time.sleep(0.5)
+                continue
+            
+            # Reset failure counter on successful frame read
+            if consecutive_failures > 0:
+                logger.info(f"Frame reading recovered after {consecutive_failures} failures")
+                consecutive_failures = 0
             frame = self.preprocess_frame(frame)
 
             elapsed_time = (

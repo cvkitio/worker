@@ -1,0 +1,51 @@
+# CVKit.io Worker Configuration (YAML format)
+receivers:
+  - name: example
+    type: rtsp
+    url: "rtsp://tapoadmin:24Calbina1@192.168.88.69:554/stream1"
+    url2: "rtsp://user:password@192.168.88.69:554/stream1"
+
+preprocessors:
+  - name: example
+    type: resize
+    width: 1152
+    height: 648
+  - name: example2
+    type: grayscale
+
+detectors:
+  - name: face_detector
+    type: dlib
+    model: yolov8n.pt
+    labels: ["person", "car", "truck"]
+    threshold: 0.5
+    iou: 0.5
+    max_detections: 10
+    
+  - name: face_matcher
+    parent: face_detector
+    type: yolo
+    model: yolov8n.pt
+    labels: ["person", "car", "truck"]
+    threshold: 0.5
+    iou: 0.5
+    max_detections: 10
+    
+  - name: face_liveness
+    parent: face_detector
+    type: yolo
+    model: yolov8n.pt
+    labels: ["person", "car", "truck"]
+    threshold: 0.5
+    iou: 0.5
+    max_detections: 10
+
+actions:
+  - name: example
+    type: http
+    url: "http://localhost:8080/notify"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    body:
+      message: "{{message}}"

@@ -63,6 +63,34 @@ The server will need a config file that defines
 
 ```
 
+## Testing
+
+### Download Test Data
+
+To download test data including Kaggle face datasets and test videos:
+
+```bash
+# Download Kaggle faces dataset (requires Kaggle API credentials)
+python tests/download_kaggle_faces.py
+
+# Download test videos
+python tests/download_test_videos.py
+
+# Create test dataset from Kaggle faces
+python tests/create_kaggle_test_dataset.py
+```
+
+### Run Tests
+
+To test face detection functionality:
+
+```bash
+# Run face detection tests with Kaggle dataset
+python tests/test_kaggle_face_detection.py
+```
+
+**Note:** Testing requires Kaggle API credentials. Place your `kaggle.json` file in `~/.kaggle/` directory.
+
 ## Initial test scenarios
 
 1. Detect a humanoid and send an email

@@ -8,7 +8,7 @@ class DetectorLoader:
         for detector in self.detectors_config:
             if detector["type"] == "face_detector":
                 # Load face detection model
-                from detectors.face_detect import FaceDetector
+                from .detectors.face_detect import FaceDetector
                 self.model = FaceDetector(
                     model_path=detector["model_path"],
                     device=detector["device"])

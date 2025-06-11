@@ -1,0 +1,151 @@
+{
+  "total_tests": 8,
+  "successful_tests": 4,
+  "failed_tests": 4,
+  "success_rate": 0.5,
+  "face_frame_tests": 5,
+  "face_frame_successes": 1,
+  "face_detection_rate": 0.2,
+  "no_face_frame_tests": 3,
+  "no_face_frame_successes": 3,
+  "no_face_accuracy": 1.0,
+  "total_time_seconds": 1.1865458488464355,
+  "frame_results": [
+    {
+      "frame_number": 0,
+      "detector_used": "dlib",
+      "expected_has_face": true,
+      "detected_face_count": 0,
+      "detection_time_ms": 4.5871734619140625,
+      "detected_faces": "rectangles[]",
+      "expected_info": {
+        "frame_number": 0,
+        "filename": "frame_0000.jpg",
+        "has_face": true,
+        "source_type": "face",
+        "source_file": "kaggle_face_1.jpg"
+      },
+      "success": false,
+      "message": "\u2717 Failed to detect expected face with dlib"
+    },
+    {
+      "frame_number": 1,
+      "detector_used": "dlib",
+      "expected_has_face": true,
+      "detected_face_count": 0,
+      "detection_time_ms": 4.651069641113281,
+      "detected_faces": "rectangles[]",
+      "expected_info": {
+        "frame_number": 1,
+        "filename": "frame_0001.jpg",
+        "has_face": true,
+        "source_type": "face",
+        "source_file": "kaggle_face_2.jpg"
+      },
+      "success": false,
+      "message": "\u2717 Failed to detect expected face with dlib"
+    },
+    {
+      "frame_number": 2,
+      "detector_used": "dlib",
+      "expected_has_face": false,
+      "detected_face_count": 0,
+      "detection_time_ms": 4.517793655395508,
+      "detected_faces": "rectangles[]",
+      "expected_info": {
+        "frame_number": 2,
+        "filename": "frame_0002.jpg",
+        "has_face": false,
+        "source_type": "blank",
+        "source_file": "blank_1.jpg"
+      },
+      "success": true,
+      "message": "\u2713 Correctly detected no faces with dlib"
+    },
+    {
+      "frame_number": 3,
+      "detector_used": "dlib",
+      "expected_has_face": true,
+      "detected_face_count": 0,
+      "detection_time_ms": 4.507780075073242,
+      "detected_faces": "rectangles[]",
+      "expected_info": {
+        "frame_number": 3,
+        "filename": "frame_0003.jpg",
+        "has_face": true,
+        "source_type": "face",
+        "source_file": "kaggle_face_3.jpg"
+      },
+      "success": false,
+      "message": "\u2717 Failed to detect expected face with dlib"
+    },
+    {
+      "frame_number": 4,
+      "detector_used": "dlib",
+      "expected_has_face": false,
+      "detected_face_count": 0,
+      "detection_time_ms": 4.472255706787109,
+      "detected_faces": "rectangles[]",
+      "expected_info": {
+        "frame_number": 4,
+        "filename": "frame_0004.jpg",
+        "has_face": false,
+        "source_type": "blank",
+        "source_file": "blank_2.jpg"
+      },
+      "success": true,
+      "message": "\u2713 Correctly detected no faces with dlib"
+    },
+    {
+      "frame_number": 5,
+      "detector_used": "dlib",
+      "expected_has_face": false,
+      "detected_face_count": 0,
+      "detection_time_ms": 4.656076431274414,
+      "detected_faces": "rectangles[]",
+      "expected_info": {
+        "frame_number": 5,
+        "filename": "frame_0005.jpg",
+        "has_face": false,
+        "source_type": "blank",
+        "source_file": "blank_3.jpg"
+      },
+      "success": true,
+      "message": "\u2713 Correctly detected no faces with dlib"
+    },
+    {
+      "frame_number": 6,
+      "detector_used": "dlib",
+      "expected_has_face": true,
+      "detected_face_count": 1,
+      "detection_time_ms": 4.666805267333984,
+      "detected_faces": "rectangles[[(100, 77) (204, 181)]]",
+      "expected_info": {
+        "frame_number": 6,
+        "filename": "frame_0006.jpg",
+        "has_face": true,
+        "source_type": "face",
+        "source_file": "kaggle_face_4.jpg"
+      },
+      "success": true,
+      "message": "\u2713 Correctly detected 1 face(s) with dlib"
+    },
+    {
+      "frame_number": 7,
+      "detector_used": "dlib",
+      "expected_has_face": true,
+      "detected_face_count": 0,
+      "detection_time_ms": 4.600048065185547,
+      "detected_faces": "rectangles[]",
+      "expected_info": {
+        "frame_number": 7,
+        "filename": "frame_0007.jpg",
+        "has_face": true,
+        "source_type": "face",
+        "source_file": "kaggle_face_5.jpg"
+      },
+      "success": false,
+      "message": "\u2717 Failed to detect expected face with dlib"
+    }
+  ]
+}

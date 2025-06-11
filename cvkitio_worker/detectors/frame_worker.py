@@ -5,9 +5,9 @@ import os
 import numpy as np
 from loguru import logger
 
-from detect.loader import DetectorLoader
-from receiver.loader import ReceiverLoader
-from detect.frame import Frame
+from .loader import DetectorLoader
+from ..receivers.loader import ReceiverLoader
+from .frame import Frame
 
 
 class FrameWorker:

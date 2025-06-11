@@ -1,0 +1,17 @@
+Kaggle Human Faces Dataset Summary
+========================================
+
+Total faces extracted: 10
+Storage location: kaggle_faces/faces
+
+Face files:
+   1. face_001.jpg - 266x400 (20.0 KB)
+   2. face_002.jpg - 400x266 (30.5 KB)
+   3. face_003.jpg - 266x400 (32.7 KB)
+   4. face_004.jpg - 400x266 (23.8 KB)
+   5. face_005.jpg - 400x267 (42.1 KB)
+   6. face_006.jpg - 400x266 (35.6 KB)
+   7. face_007.jpg - 400x300 (57.4 KB)
+   8. face_008.jpg - 400x267 (44.9 KB)
+   9. face_009.jpg - 400x224 (18.7 KB)
+  10. face_010.jpg - 400x277 (43.2 KB)

@@ -1,4 +1,4 @@
-from detect.detectors.detector import Detector
+from .detector import Detector
 import os
 import time
 from loguru import logger

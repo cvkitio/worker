@@ -4,8 +4,8 @@ import os
 
 import cv2
 import numpy as np
-from detect.detectors.face_detect import FaceDetector
-from detect.frame import Frame
+from .detectors.face_detect import FaceDetector
+from .frame import Frame
 from loguru import logger
 
 

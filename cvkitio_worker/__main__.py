@@ -1,8 +1,8 @@
 import argparse
 import os
-from config.parse_config import ConfigParser
-from detect.frame_worker import FrameWorker
-from detect.detect_worker import DetectWorker
+from .config.parse_config import ConfigParser
+from .detectors.frame_worker import FrameWorker
+from .detectors.detect_worker import DetectWorker
 from concurrent.futures import ProcessPoolExecutor
 from multiprocessing import Manager, shared_memory
 from loguru import logger

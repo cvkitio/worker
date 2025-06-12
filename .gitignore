@@ -19,3 +19,12 @@ test_videos/
 
 # Temporary config files
 /tmp_config_*.json
+
+# Model files - downloaded as needed, not stored in repo
+models/
+*.dat
+*.pb
+*.pbtxt
+*.onnx
+*.caffemodel
+*.prototxt

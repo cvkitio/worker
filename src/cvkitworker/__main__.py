@@ -29,9 +29,9 @@ def create_file_config(file_path):
             {
                 "name": "face_detector",
                 "type": "face_detector",
+                "variant": "dlib",
                 "frequency_ms": 500,
                 "scale": 1.0,
-                "model_path": "mmod_human_face_detector.dat",
                 "device": "cpu"
             }
         ],
@@ -64,9 +64,9 @@ def create_webcam_config():
             {
                 "name": "face_detector",
                 "type": "face_detector",
+                "variant": "dlib",
                 "frequency_ms": 500,
                 "scale": 1.0,
-                "model_path": "mmod_human_face_detector.dat",
                 "device": "cpu"
             }
         ],

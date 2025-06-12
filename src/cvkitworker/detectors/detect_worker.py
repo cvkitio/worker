@@ -20,7 +20,7 @@ class DetectWorker:
         # This could include loading models, setting up logging, etc.
         # This needs to dynamically load the various detectors based on
         # the configuration
-        self.face_detector = FaceDetector("dlib_cnn")
+        self.face_detector = FaceDetector("dlib")  # Use basic dlib detector as default
         logger.info(f"Loaded configuration for DetectWorker. PID: "
                     f"{os.getpid()}")
 

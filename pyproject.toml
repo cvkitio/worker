@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cvkitworker"
+version = "0.1.0"
+description = "A worker for performing real time computer vision related operations and generating events optimized to run as a container."
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+authors = [
+    {name = "cvkit.io"},
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "certifi==2025.4.26",
+    "charset-normalizer==3.4.2",
+    "dlib>=19.24.0,<21.0.0",
+    "idna==3.10",
+    "kagglehub==0.3.12",
+    "loguru==0.7.3",
+    "numpy>=1.24.0,<3.0.0",
+    "opencv-python==4.11.0.86",
+    "packaging==25.0",
+    "PyYAML==6.0.2",
+    "requests==2.32.3",
+    "tqdm==4.67.1",
+    "urllib3==2.4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-cov",
+    "black",
+    "flake8",
+    "mypy",
+]
+
+[project.urls]
+Homepage = "https://github.com/cvkitio/worker"
+Repository = "https://github.com/cvkitio/worker"
+Issues = "https://github.com/cvkitio/worker/issues"
+
+[project.scripts]
+cvkitworker = "cvkitworker.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+cvkitworker = "src/cvkitworker"

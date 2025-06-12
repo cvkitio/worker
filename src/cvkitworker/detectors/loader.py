@@ -1,6 +1,6 @@
 class DetectorLoader:
     def __init__(self, detectors_config: str):
-        self.model_path = detectors_config
+        self.detectors_config = detectors_config
         self.detectors = []
 
     def load_model(self):

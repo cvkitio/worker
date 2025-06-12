@@ -1,3 +1,41 @@
+Metadata-Version: 2.4
+Name: cvkitworker
+Version: 0.1.0
+Summary: A worker for performing real time computer vision related operations and generating events optimized to run as a container.
+Author: cvkit.io
+Project-URL: Homepage, https://github.com/cvkitio/worker
+Project-URL: Repository, https://github.com/cvkitio/worker
+Project-URL: Issues, https://github.com/cvkitio/worker/issues
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: certifi==2025.4.26
+Requires-Dist: charset-normalizer==3.4.2
+Requires-Dist: dlib<21.0.0,>=19.24.0
+Requires-Dist: idna==3.10
+Requires-Dist: kagglehub==0.3.12
+Requires-Dist: loguru==0.7.3
+Requires-Dist: numpy<3.0.0,>=1.24.0
+Requires-Dist: opencv-python==4.11.0.86
+Requires-Dist: packaging==25.0
+Requires-Dist: PyYAML==6.0.2
+Requires-Dist: requests==2.32.3
+Requires-Dist: tqdm==4.67.1
+Requires-Dist: urllib3==2.4.0
+Provides-Extra: dev
+Requires-Dist: pytest>=6.0; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: flake8; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+
 # cvkit.io worker
 
 A worker for performing real time computer vision related operations and generating events optimized to run as a container.
@@ -24,33 +62,18 @@ Some examples:
 
 ## Installation
 
-### Development Installation
+`python -m venv .venv`
 
-```bash
-# Create and activate virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+`source .venv/bin/activate`
 
-# Install package in development mode
-pip install -e .
-```
-
-### Production Installation
-
-```bash
-pip install cvkitworker
-```
+`pip install -r requirements.txt`
 
 ## Usage
 
-After installation, you can run the application in several ways:
+Run the application as a Python module:
 
 ```bash
-# Using the installed CLI command
-cvkitworker --config config.sample.json
-
-# Or as a Python module
-python -m cvkitworker --config config.sample.json
+python -m cvkitio_worker --config config.sample.json
 ```
 
 ## Development Roadmap

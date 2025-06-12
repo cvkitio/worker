@@ -1,0 +1,2 @@
+[console_scripts]
+cvkitworker = cvkitworker.__main__:main

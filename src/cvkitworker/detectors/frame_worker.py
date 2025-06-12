@@ -6,7 +6,7 @@ import numpy as np
 from loguru import logger
 
 from .loader import DetectorLoader
-from ..receivers.loader import ReceiverLoader
+from cvkitworker.receivers.loader import ReceiverLoader
 from .frame import Frame
 
 

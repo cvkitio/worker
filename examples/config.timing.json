@@ -1,0 +1,33 @@
+{
+    "receivers": [
+        {
+            "name": "webcam_input",
+            "type": "webcam",
+            "source": 0
+        }
+    ],
+    "detectors": [
+        {
+            "name": "face_detector",
+            "type": "face_detector",
+            "variant": "dlib",
+            "frequency_ms": 500,
+            "scale": 1.0,
+            "device": "cpu"
+        }
+    ],
+    "preprocessors": [
+        {
+            "type": "resize",
+            "width": 640,
+            "height": 480
+        }
+    ],
+    "timing": {
+        "enabled": true,
+        "storage": "file",
+        "file_path": "logs/timing_measurements.jsonl",
+        "include_args": true,
+        "include_results": true
+    }
+}

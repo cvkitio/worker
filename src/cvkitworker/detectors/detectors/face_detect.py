@@ -5,6 +5,12 @@ import cv2
 import numpy as np
 from pathlib import Path
 from loguru import logger
+from ...utils.timing import (
+    measure_face_detection, 
+    measure_image_processing, 
+    measure_color_conversion,
+    measure_scaling
+)
 
 
 class FaceDetector(Detector):
@@ -100,9 +106,9 @@ class FaceDetector(Detector):
             raise ValueError(f"Unknown detector: {self.detector_name}. "
                            f"Supported: dlib, dlib_cnn, opencv_dnn, yunet")
 
+    @measure_face_detection
     def detect(self, frame):
         """Detect faces in frame and return consistent format."""
-        start = time.time()
         logger.debug(f"Detecting faces using {self.detector_name} detector. PID: {os.getpid()}")
         
         faces = []
@@ -110,7 +116,7 @@ class FaceDetector(Detector):
         try:
             if self.detector_name == "dlib":
                 # Convert BGR to RGB for dlib
-                rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                rgb_frame = self._convert_color(frame, cv2.COLOR_BGR2RGB)
                 detections = self.detector_lib(rgb_frame, 0)
                 
                 for detection in detections:
@@ -124,7 +130,7 @@ class FaceDetector(Detector):
                     
             elif self.detector_name == "dlib_cnn":
                 # Convert BGR to RGB for dlib
-                rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                rgb_frame = self._convert_color(frame, cv2.COLOR_BGR2RGB)
                 detections = self.detector_lib(rgb_frame, 0)
                 
                 for detection in detections:
@@ -141,7 +147,7 @@ class FaceDetector(Detector):
                 height, width = frame.shape[:2]
                 
                 # Create blob from frame
-                blob = cv2.dnn.blobFromImage(frame, 1.0, (300, 300), [104, 117, 123])
+                blob = self._create_dnn_blob(frame)
                 self.detector_lib.setInput(blob)
                 detections = self.detector_lib.forward()
                 
@@ -184,7 +190,16 @@ class FaceDetector(Detector):
         except Exception as e:
             logger.error(f"Error during face detection: {e}")
             
-        elapsed_ms = (time.time() - start) * 1000
-        logger.info(f"Face detection took {elapsed_ms:.1f}ms, found {len(faces)} faces. PID: {os.getpid()}")
+        logger.info(f"Found {len(faces)} faces using {self.detector_name}. PID: {os.getpid()}")
         
         return faces
+
+    @measure_color_conversion 
+    def _convert_color(self, frame, conversion_code):
+        """Convert color space with timing measurement."""
+        return cv2.cvtColor(frame, conversion_code)
+    
+    @measure_image_processing
+    def _create_dnn_blob(self, frame):
+        """Create DNN blob with timing measurement."""
+        return cv2.dnn.blobFromImage(frame, 1.0, (300, 300), [104, 117, 123])

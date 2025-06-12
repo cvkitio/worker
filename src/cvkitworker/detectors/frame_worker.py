@@ -8,6 +8,11 @@ from loguru import logger
 from .loader import DetectorLoader
 from cvkitworker.receivers.loader import ReceiverLoader
 from .frame import Frame
+from ..utils.timing import (
+    measure_frame_processing,
+    measure_scaling,
+    measure_color_conversion
+)
 
 
 class FrameWorker:
@@ -34,6 +39,7 @@ class FrameWorker:
                 detectors.append(detector)
         return detectors
 
+    @measure_frame_processing
     def preprocess_frame(self, frame):
         # Apply any preprocessing steps defined in the configuration
         for preprocessor in self.preprocessors:
@@ -41,11 +47,21 @@ class FrameWorker:
                 case "resize":
                     width = int(preprocessor.get("width", frame.shape[1]))
                     height = int(preprocessor.get("height", frame.shape[0]))
-                    frame = cv2.resize(frame, (width, height))
+                    frame = self._resize_frame(frame, width, height)
                 case "grayscale":
-                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                    frame = self._convert_to_grayscale(frame)
             # Add more preprocessing steps as needed
         return frame
+    
+    @measure_scaling
+    def _resize_frame(self, frame, width, height):
+        """Resize frame with timing measurement."""
+        return cv2.resize(frame, (width, height))
+    
+    @measure_color_conversion
+    def _convert_to_grayscale(self, frame):
+        """Convert frame to grayscale with timing measurement."""
+        return cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     def run(self):
         logger.info(

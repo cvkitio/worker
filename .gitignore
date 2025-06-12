@@ -4,3 +4,18 @@ config.json
 __pycache__/
 
 .DS_Store
+
+# Video files - downloaded as needed, not stored in repo
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.wmv
+*.flv
+*.webm
+
+# Test videos directory
+test_videos/
+
+# Temporary config files
+/tmp_config_*.json

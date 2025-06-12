@@ -19,3 +19,6 @@ src/cvkitworker/detectors/detectors/detector.py
 src/cvkitworker/detectors/detectors/face_detect.py
 src/cvkitworker/receivers/__init__.py
 src/cvkitworker/receivers/loader.py
+src/cvkitworker/utils/__init__.py
+src/cvkitworker/utils/timing.py
+tests/test_timing.py

@@ -80,6 +80,9 @@ cvkitworker --file /path/to/video.mp4
 
 # Enable timing with environment variable
 CVKIT_TIMING_ENABLED=true cvkitworker --webcam
+
+# Debug camera issues (enumerate all available cameras)
+CVKIT_ENUMERATE_CAMERAS=true cvkitworker --webcam
 ```
 
 ## Configuration Structure
@@ -129,3 +132,38 @@ The timing configuration enables detailed performance analysis:
 - **Zero overhead**: No performance impact when disabled
 
 See `docs/timing_measurement.md` for detailed timing system documentation.
+
+## Camera Troubleshooting
+
+### macOS Camera Issues
+
+**Continuity Camera Warning**: On macOS, you may see a deprecation warning about AVCaptureDeviceTypeExternal. This is normal and the camera will still work properly.
+
+**Camera Access Permissions**: Ensure your terminal application has camera access permissions in System Preferences > Security & Privacy > Camera.
+
+**Multiple Cameras**: Use `CVKIT_ENUMERATE_CAMERAS=true` to see all available cameras and their indices.
+
+### Camera Selection
+
+```json
+{
+  "receivers": [
+    {
+      "name": "webcam_input", 
+      "type": "webcam",
+      "source": 1  // Try different indices (0, 1, 2) for different cameras
+    }
+  ]
+}
+```
+
+### Common Camera Indices
+- **0**: Built-in camera (MacBook camera)
+- **1**: External USB camera or Continuity Camera
+- **2**: Additional external cameras
+
+### Camera Backend Selection
+The system automatically uses the best backend for your platform:
+- **macOS**: AVFoundation backend (recommended)
+- **Windows**: DirectShow backend  
+- **Linux**: V4L2 backend

@@ -62,18 +62,33 @@ Some examples:
 
 ## Installation
 
-`python -m venv .venv`
+### Development Installation
 
-`source .venv/bin/activate`
+```bash
+# Create and activate virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-`pip install -r requirements.txt`
+# Install package in development mode
+pip install -e .
+```
+
+### Production Installation
+
+```bash
+pip install cvkitworker
+```
 
 ## Usage
 
-Run the application as a Python module:
+After installation, you can run the application in several ways:
 
 ```bash
-python -m cvkitio_worker --config config.sample.json
+# Using the installed CLI command
+cvkitworker --config config.sample.json
+
+# Or as a Python module
+python -m cvkitworker --config config.sample.json
 ```
 
 ## Development Roadmap

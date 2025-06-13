@@ -43,6 +43,7 @@ dependencies = [
 dev = [
     "pytest>=6.0",
     "pytest-cov",
+    "pytest-timeout",
     "black",
     "flake8",
     "mypy",

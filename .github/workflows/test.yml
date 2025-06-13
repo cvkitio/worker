@@ -46,7 +46,10 @@ jobs:
     
     - name: Run tests
       run: |
-        pytest tests/ -v --cov=src/cvkitworker --cov-report=xml
+        pytest tests/ -v --cov=src/cvkitworker --cov-report=xml -m "not slow" --tb=short
+      timeout-minutes: 10
+      env:
+        CI: true
     
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3

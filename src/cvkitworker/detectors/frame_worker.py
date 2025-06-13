@@ -9,11 +9,8 @@ from loguru import logger
 from .loader import DetectorLoader
 from cvkitworker.receivers.loader import ReceiverLoader
 from .frame import Frame
-from ..utils.timing import (
-    measure_frame_processing,
-    measure_scaling,
-    measure_color_conversion
-)
+from ..utils.timing import measure_frame_processing
+from ..preprocessors.image_processing import resize_frame, convert_to_grayscale
 
 
 class FrameWorker:
@@ -61,42 +58,12 @@ class FrameWorker:
                     # Convert to int if provided, otherwise keep as None
                     width = int(width) if width is not None else None
                     height = int(height) if height is not None else None
-                    frame = self._resize_frame(frame, width, height)
+                    frame = resize_frame(frame, width, height)
                 case "grayscale":
-                    frame = self._convert_to_grayscale(frame)
+                    frame = convert_to_grayscale(frame)
             # Add more preprocessing steps as needed
         return frame
     
-    @measure_scaling
-    def _resize_frame(self, frame, width, height):
-        """Resize frame with timing measurement, maintaining aspect ratio.
-        
-        If only width is provided (height=None), scale to that width.
-        If only height is provided (width=None), scale to that height.
-        If both are provided, use the old behavior (may distort image).
-        """
-        orig_height, orig_width = frame.shape[:2]
-        
-        if width is not None and height is None:
-            # Scale by width, maintain aspect ratio
-            scale_factor = width / orig_width
-            new_height = int(orig_height * scale_factor)
-            return cv2.resize(frame, (width, new_height))
-        elif height is not None and width is None:
-            # Scale by height, maintain aspect ratio
-            scale_factor = height / orig_height
-            new_width = int(orig_width * scale_factor)
-            return cv2.resize(frame, (new_width, height))
-        else:
-            # Both provided or both None - use original behavior
-            if width is None and height is None:
-                return frame
-            return cv2.resize(frame, (width, height))
-    
-    @measure_color_conversion
-    def _convert_to_grayscale(self, frame):
-        """Convert frame to grayscale with timing measurement."""
-        return cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     def run(self):
         logger.info(

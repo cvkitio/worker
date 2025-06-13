@@ -2,6 +2,7 @@ from multiprocessing import shared_memory
 import cv2
 import time
 import os
+import signal
 import numpy as np
 from loguru import logger
 
@@ -24,6 +25,16 @@ class FrameWorker:
         self.video_capture = None
         self.receiver = None
         self.queue = queue
+        self.shutdown_requested = False
+        
+        # Register signal handler for this worker
+        signal.signal(signal.SIGINT, self._signal_handler)
+        signal.signal(signal.SIGTERM, self._signal_handler)
+    
+    def _signal_handler(self, signum, frame):
+        """Handle shutdown signals in worker process."""
+        logger.info(f"FrameWorker received signal {signum}. Requesting shutdown...")
+        self.shutdown_requested = True
 
     def load(self):
         # Load the receiver configuration
@@ -45,8 +56,11 @@ class FrameWorker:
         for preprocessor in self.preprocessors:
             match preprocessor["type"]:
                 case "resize":
-                    width = int(preprocessor.get("width", frame.shape[1]))
-                    height = int(preprocessor.get("height", frame.shape[0]))
+                    width = preprocessor.get("width")
+                    height = preprocessor.get("height")
+                    # Convert to int if provided, otherwise keep as None
+                    width = int(width) if width is not None else None
+                    height = int(height) if height is not None else None
                     frame = self._resize_frame(frame, width, height)
                 case "grayscale":
                     frame = self._convert_to_grayscale(frame)
@@ -55,8 +69,29 @@ class FrameWorker:
     
     @measure_scaling
     def _resize_frame(self, frame, width, height):
-        """Resize frame with timing measurement."""
-        return cv2.resize(frame, (width, height))
+        """Resize frame with timing measurement, maintaining aspect ratio.
+        
+        If only width is provided (height=None), scale to that width.
+        If only height is provided (width=None), scale to that height.
+        If both are provided, use the old behavior (may distort image).
+        """
+        orig_height, orig_width = frame.shape[:2]
+        
+        if width is not None and height is None:
+            # Scale by width, maintain aspect ratio
+            scale_factor = width / orig_width
+            new_height = int(orig_height * scale_factor)
+            return cv2.resize(frame, (width, new_height))
+        elif height is not None and width is None:
+            # Scale by height, maintain aspect ratio
+            scale_factor = height / orig_height
+            new_width = int(orig_width * scale_factor)
+            return cv2.resize(frame, (new_width, height))
+        else:
+            # Both provided or both None - use original behavior
+            if width is None and height is None:
+                return frame
+            return cv2.resize(frame, (width, height))
     
     @measure_color_conversion
     def _convert_to_grayscale(self, frame):
@@ -74,13 +109,18 @@ class FrameWorker:
         DetectorLoader(detectors)
 
         last_processed_time = time.time()
-        while self.video_capture.isOpened():
+        while self.video_capture.isOpened() and not self.shutdown_requested:
             ret, frame = self.video_capture.read()
             if not ret:
                 logger.error(
                     f"Failed to retrieve frame (PID: {os.getpid()})"
                 )
                 # TODO: add retry logic and then exit
+                break
+            
+            # Check for shutdown request
+            if self.shutdown_requested:
+                logger.info("Shutdown requested, stopping frame processing")
                 break
             frame = self.preprocess_frame(frame)
 
@@ -131,9 +171,14 @@ class FrameWorker:
             # For now, we will just display the frame
             # cv2.imshow('RTSP Stream', frame)
 
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+            # Check for 'q' key press or shutdown request
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q') or self.shutdown_requested:
+                if key == ord('q'):
+                    logger.info("'q' key pressed, stopping frame processing")
                 break
 
+        logger.info("FrameWorker exiting main loop")
         self.unload()
 
     def unload(self):

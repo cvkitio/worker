@@ -1,23 +1,23 @@
 {
     "receivers": [
         {
-            "name": "video_test",
-            "type": "video",
-            "file_path": "/path/to/your/test/video.mp4"
+            "name": "webcam",
+            "type": "webcam",
+            "camera_index": 0
         }
     ],
     "preprocessors": [
         {
-            "name": "resize",
+            "name": "resize_by_width",
             "type": "resize",
             "width": 640,
-            "_comment": "Height will be calculated automatically to maintain aspect ratio"
+            "_comment": "Only width specified - height will be calculated to maintain aspect ratio"
         }
     ],
     "detectors": [
         {
             "name": "face_detector",
-            "type": "dlib_cnn",
+            "type": "dlib",
             "frequency_ms": 100.0
         }
     ],

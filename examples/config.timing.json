@@ -19,8 +19,7 @@
     "preprocessors": [
         {
             "type": "resize",
-            "width": 640,
-            "height": 480
+            "width": 640
         }
     ],
     "timing": {

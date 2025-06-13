@@ -44,6 +44,18 @@ This directory contains example configuration files for different use cases of t
   - Function argument and result tracking
   - Performance analysis capabilities
 
+### `config.aspect_ratio.json`
+**Aspect ratio preserving resize configuration**
+- **Purpose**: Demonstrate the new aspect ratio preserving resize functionality
+- **Input Source**: System webcam (camera index 0)
+- **Preprocessing**: Resize to specific width while maintaining aspect ratio
+- **Use Case**: Processing video streams without distorting images
+- **Key Features**:
+  - Specify only width OR height in resize preprocessor
+  - Automatically calculates the other dimension to maintain aspect ratio
+  - Prevents image distortion during preprocessing
+  - Useful for standardizing input sizes without squashing images
+
 ### `config.workers.json`
 **Multi-worker configuration for high-performance processing**
 - **Purpose**: Demonstrate configurable worker count for parallel processing
@@ -144,6 +156,50 @@ All configuration files follow the same JSON structure:
 - **`rtsp`**: IP camera RTSP streams
 - **`webcam`**: Local system cameras
 - **`video`**: Video file input (.mp4, .avi, .mov, etc.)
+
+## Preprocessing Options
+
+### Resize Preprocessor
+
+The resize preprocessor now supports aspect ratio preservation:
+
+```json
+{
+  "preprocessors": [
+    {
+      "name": "resize_by_width",
+      "type": "resize",
+      "width": 640
+      // Height will be calculated automatically
+    }
+  ]
+}
+```
+
+**Resize Modes:**
+- **Width only**: Specify `"width"` - height is calculated to maintain aspect ratio
+- **Height only**: Specify `"height"` - width is calculated to maintain aspect ratio  
+- **Both dimensions**: Specify both `"width"` and `"height"` - may distort the image
+- **Neither dimension**: Omit both - returns the original frame unchanged
+
+**Example configurations:**
+```json
+// Scale to 640px width, maintain aspect ratio
+{"type": "resize", "width": 640}
+
+// Scale to 480px height, maintain aspect ratio
+{"type": "resize", "height": 480}
+
+// Scale to exact 640x480 (may distort)
+{"type": "resize", "width": 640, "height": 480}
+```
+
+### Grayscale Preprocessor
+
+Converts frames to grayscale:
+```json
+{"type": "grayscale"}
+```
 
 ## Worker Configuration
 

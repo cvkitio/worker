@@ -44,6 +44,19 @@ This directory contains example configuration files for different use cases of t
   - Function argument and result tracking
   - Performance analysis capabilities
 
+### `config.workers.json`
+**Multi-worker configuration for high-performance processing**
+- **Purpose**: Demonstrate configurable worker count for parallel processing
+- **Input Source**: System webcam (camera index 0)
+- **Worker Configuration**: 4 detect workers for parallel face detection
+- **Use Case**: High-throughput video processing with multiple worker processes
+- **Key Features**:
+  - Configurable worker count (4 detect workers)
+  - Parallel face detection processing
+  - Optimized for multi-core systems
+  - Higher processing throughput
+  - Load balancing across worker processes
+
 ## Usage Examples
 
 ### Basic RTSP Setup
@@ -83,6 +96,12 @@ CVKIT_TIMING_ENABLED=true cvkitworker --webcam
 
 # Debug camera issues (enumerate all available cameras)
 CVKIT_ENUMERATE_CAMERAS=true cvkitworker --webcam
+
+# Configure worker count via environment variable
+CVKIT_WORKERS=4 cvkitworker --webcam
+
+# Override worker count via CLI argument
+cvkitworker --webcam --workers 6
 ```
 
 ## Configuration Structure
@@ -105,6 +124,10 @@ All configuration files follow the same JSON structure:
   ],
   "timing": {        // Performance monitoring (optional)
     ...
+  },
+  "workers": {       // Worker process configuration (optional)
+    "detect_workers": 4,    // Number of detection worker processes
+    "frame_workers": 1      // Number of frame worker processes (always 1)
   }
 }
 ```
@@ -121,6 +144,55 @@ All configuration files follow the same JSON structure:
 - **`rtsp`**: IP camera RTSP streams
 - **`webcam`**: Local system cameras
 - **`video`**: Video file input (.mp4, .avi, .mov, etc.)
+
+## Worker Configuration
+
+The system uses a producer-consumer architecture with configurable worker processes:
+
+### Worker Types
+
+- **Frame Workers** (1): Producer process that reads video frames and applies preprocessing
+- **Detect Workers** (configurable): Consumer processes that perform face detection on frames
+
+### Configuration Priority
+
+Worker count is determined in this priority order:
+
+1. **CLI Argument**: `--workers N` (highest priority)
+2. **Environment Variable**: `CVKIT_WORKERS=N`
+3. **Config File**: `"workers": {"detect_workers": N}`
+4. **Default**: 2 detect workers
+
+### Configuration Examples
+
+```json
+{
+  "workers": {
+    "detect_workers": 4
+  }
+}
+```
+
+```bash
+# Environment variable
+export CVKIT_WORKERS=6
+cvkitworker --webcam
+
+# CLI override
+cvkitworker --config config.json --workers 8
+```
+
+### Performance Recommendations
+
+- **Single CPU core**: Use 1-2 detect workers
+- **Dual core**: Use 2-3 detect workers  
+- **Quad core**: Use 3-4 detect workers
+- **8+ cores**: Use 4-8 detect workers
+
+Higher worker counts may not improve performance due to:
+- Model loading overhead
+- Memory bandwidth limitations
+- GIL constraints in face detection libraries
 
 ## Performance Monitoring
 

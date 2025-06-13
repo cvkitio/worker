@@ -9,8 +9,6 @@ from concurrent.futures import ProcessPoolExecutor
 from multiprocessing import Manager, shared_memory
 from loguru import logger
 
-num_workers = 2  # Number of worker processes to spawn
-
 
 def create_file_config(file_path):
     """Create temporary configuration for file input."""
@@ -93,6 +91,7 @@ def main():
     parser.add_argument('--config', type=str, help='Path to config file')
     parser.add_argument('--file', type=str, help='Path to video file for testing')
     parser.add_argument('--webcam', action='store_true', help='Use webcam for testing')
+    parser.add_argument('--workers', type=int, help='Number of detect workers to spawn (overrides config)')
     
     args = parser.parse_args()
     
@@ -112,6 +111,20 @@ def main():
         parser.error("Must specify --config, --file, or --webcam")
 
     config_parser = ConfigParser(config_file)
+    
+    # Get worker configuration
+    workers_config = config_parser.get_workers_config()
+    num_detect_workers = workers_config['detect_workers']
+    
+    # Override with CLI argument if provided
+    if args.workers is not None:
+        if args.workers > 0:
+            num_detect_workers = args.workers
+            logger.info(f"Worker count overridden by CLI argument: {args.workers}")
+        else:
+            logger.warning(f"Invalid worker count from CLI: {args.workers}. Using config/default.")
+    
+    logger.info(f"Using {num_detect_workers} detect workers")
 
     with Manager() as manager:
         # Shared memory can be used to share data between processes
@@ -128,21 +141,21 @@ def main():
                                   work_queue, shm.name)
         consumers = []
         with ProcessPoolExecutor() as executor:
-            logger.info(f"Spawning FrameWorker and {num_workers} "
+            logger.info(f"Spawning FrameWorker and {num_detect_workers} "
                        f"DetectWorkers. PID: {os.getpid()}")
             producer = executor.submit(frame_worker.run)
             
-            for i in range(num_workers):
+            for i in range(num_detect_workers):
                 detect_worker = DetectWorker(work_queue, shm.name)
                 # Start multiple detect workers
                 consumers.append(executor.submit(detect_worker.run))
             # Wait for the result
             producer.result()
-            for i in range(num_workers):
+            for i in range(num_detect_workers):
                 consumers[i].result()
     logger.info("All workers finished. Cleaning up shared memory.")
     frame_worker.unload()
-    for i in range(num_workers):
+    for i in range(num_detect_workers):
         consumers[i].unload()
     # Clean up shared memory
     shm.close()

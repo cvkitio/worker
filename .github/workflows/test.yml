@@ -24,12 +24,25 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libgl1-mesa-dev libglib2.0-0 libsm6 libxext6 libxrender-dev libgomp1 libgstreamer1.0-0 libgstreamer-plugins-base1.0-0
+        sudo apt-get install -y libgl1-mesa-dev libglib2.0-0 libsm6 libxext6 libxrender-dev libgomp1 libgstreamer1.0-0 libgstreamer-plugins-base1.0-0 cmake
+    
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-${{ matrix.python-version }}-
+          ${{ runner.os }}-pip-
     
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
+        python -m pip install --upgrade pip wheel
+        # Install dlib from pre-built wheel if available
+        pip install dlib --prefer-binary
+        # Install the rest of the dependencies
         pip install -e ".[dev]"
+      timeout-minutes: 20
     
     - name: Run tests
       run: |

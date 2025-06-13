@@ -41,6 +41,18 @@ pip install -e .
 pip install cvkitworker
 ```
 
+### CI/CD Status
+
+⚠️ **Note**: GitHub Actions CI tests are currently failing due to timeout issues with dlib compilation. This needs to be addressed:
+
+**TODO**:
+- [ ] Consider using pre-built dlib wheels or Docker images
+- [ ] Investigate alternative face detection libraries that are faster to install
+- [ ] Split tests into unit and integration tests with separate workflows
+- [ ] Add matrix strategy to test different components separately
+
+The tests pass locally but timeout in CI due to the long compilation time of dlib from source.
+
 ## Usage
 
 After installation, you can run the application in several ways:

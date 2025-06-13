@@ -63,3 +63,33 @@ class TestSharedMemoryCircularBuffer:
         assert np.array_equal(frames[0], np.full(shape, 1, dtype=np.uint8))
         assert np.array_equal(frames[1], np.full(shape, 2, dtype=np.uint8))
         buf.close()
+    
+    def test_pythonic_features(self):
+        """Test Pythonic interface methods."""
+        with SharedMemoryCircularBuffer(frame_shape=(1, 1, 1), dtype=np.uint8, capacity=3) as buf:
+            # Test len and is_full
+            assert len(buf) == 0
+            assert not buf.is_full
+            
+            # Add frames
+            for i in range(3):
+                buf.append(np.full((1, 1, 1), i, dtype=np.uint8))
+            
+            assert len(buf) == 3
+            assert buf.is_full
+            
+            # Test iteration
+            frames = list(buf)
+            assert len(frames) == 3
+            for i, frame in enumerate(frames):
+                assert np.array_equal(frame, np.full((1, 1, 1), i, dtype=np.uint8))
+            
+            # Test indexing
+            assert np.array_equal(buf[0], np.full((1, 1, 1), 0, dtype=np.uint8))
+            assert np.array_equal(buf[-1], np.full((1, 1, 1), 2, dtype=np.uint8))
+            assert np.array_equal(buf[1], np.full((1, 1, 1), 1, dtype=np.uint8))
+            
+            # Test clear
+            buf.clear()
+            assert len(buf) == 0
+            assert not buf.is_full

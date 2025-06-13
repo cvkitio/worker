@@ -69,8 +69,48 @@ class SharedMemoryCircularBuffer:
             frames.append(self.buffer[idx].copy())
         return frames
 
+    def __len__(self) -> int:
+        """Return the number of frames currently in the buffer."""
+        return self.length
+    
+    def __iter__(self):
+        """Iterate over frames in insertion order."""
+        if self.length == 0:
+            return
+        start = (self.index - self.length) % self.capacity
+        for i in range(self.length):
+            idx = (start + i) % self.capacity
+            yield self.buffer[idx].copy()
+    
+    def __getitem__(self, index: int) -> np.ndarray:
+        """Get frame by index (negative indexing supported)."""
+        if not -self.length <= index < self.length:
+            raise IndexError("Index out of range")
+        if index < 0:
+            index += self.length
+        idx = (self.index - self.length + index) % self.capacity
+        return self.buffer[idx].copy()
+    
+    @property
+    def is_full(self) -> bool:
+        """Check if the buffer is at full capacity."""
+        return self.length == self.capacity
+    
+    def clear(self) -> None:
+        """Clear the buffer."""
+        self.index = 0
+        self.length = 0
+    
     def close(self) -> None:
         """Close and unlink shared memory if owned."""
         self.shm.close()
         if self.owns_shm:
             self.shm.unlink()
+    
+    def __enter__(self):
+        """Context manager support."""
+        return self
+    
+    def __exit__(self, *args):
+        """Context manager cleanup."""
+        self.close()

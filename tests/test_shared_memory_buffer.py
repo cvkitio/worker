@@ -8,6 +8,22 @@ sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 from cvkitworker.utils.shared_buffer import SharedMemoryCircularBuffer
 
 
+def _worker(name: str, shape: tuple, dtype: str, capacity: int):
+    import numpy as np
+    from cvkitworker.utils.shared_buffer import SharedMemoryCircularBuffer
+
+    buf = SharedMemoryCircularBuffer(
+        frame_shape=shape, dtype=np.dtype(dtype), capacity=capacity,
+        name=name, create=False
+    )
+    buf.append(np.full(shape, 1, dtype=np.dtype(dtype)))
+    buf.append(np.full(shape, 2, dtype=np.dtype(dtype)))
+    last = buf.get_last()
+    all_frames = buf.get_all()
+    buf.close()
+    return last, all_frames
+
+
 class TestSharedMemoryCircularBuffer:
     def test_append_and_get_last(self):
         buf = SharedMemoryCircularBuffer(frame_shape=(2, 2, 3), dtype=np.uint8, capacity=2)
@@ -30,4 +46,20 @@ class TestSharedMemoryCircularBuffer:
         assert len(frames) == 3
         for a, e in zip(frames, expected):
             assert np.array_equal(a, e)
+        buf.close()
+
+    def test_process_pool_access(self):
+        """Shared memory buffer should be usable from a subprocess."""
+        from concurrent.futures import ProcessPoolExecutor
+
+        shape = (1, 1, 1)
+        buf = SharedMemoryCircularBuffer(frame_shape=shape, dtype=np.uint8, capacity=2)
+        with ProcessPoolExecutor(max_workers=1) as ex:
+            result = ex.submit(_worker, buf.name, shape, 'uint8', 2).result()
+
+        last, frames = result
+        assert np.array_equal(last, np.full(shape, 2, dtype=np.uint8))
+        assert len(frames) == 2
+        assert np.array_equal(frames[0], np.full(shape, 1, dtype=np.uint8))
+        assert np.array_equal(frames[1], np.full(shape, 2, dtype=np.uint8))
         buf.close()

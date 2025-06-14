@@ -1,8 +1,11 @@
 import pytest
 import tempfile
 import subprocess
+import time
+import json
 from pathlib import Path
 from cvkitworker.utils.probe import FFProbe, VideoInfo, StreamInfo
+from unittest.mock import patch, MagicMock
 
 
 class TestFFProbe:
@@ -12,7 +15,6 @@ class TestFFProbe:
         return FFProbe()
     
     @pytest.fixture
-    @pytest.mark.slow
     def sample_video(self):
         """Create a simple test video using ffmpeg."""
         with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as f:
@@ -40,6 +42,7 @@ class TestFFProbe:
         finally:
             Path(video_path).unlink(missing_ok=True)
     
+    @pytest.mark.slow
     def test_probe_video_metadata(self, ffprobe, sample_video):
         """Test extracting metadata from video file."""
         info = ffprobe.probe(sample_video)
@@ -61,6 +64,7 @@ class TestFFProbe:
         assert len(video_streams) >= 1
         assert len(audio_streams) >= 1
     
+    @pytest.mark.slow
     def test_video_stream_info(self, ffprobe, sample_video):
         """Test video stream specific information."""
         info = ffprobe.probe(sample_video)
@@ -75,6 +79,7 @@ class TestFFProbe:
         assert 29 <= video_stream.fps <= 31  # Should be close to 30 fps
         assert video_stream.pix_fmt is not None
     
+    @pytest.mark.slow
     def test_audio_stream_info(self, ffprobe, sample_video):
         """Test audio stream specific information."""
         info = ffprobe.probe(sample_video)
@@ -91,12 +96,63 @@ class TestFFProbe:
         with pytest.raises(RuntimeError, match="Failed to probe video"):
             ffprobe.probe("/non/existent/file.mp4")
     
-    def test_probe_rtsp_url(self, ffprobe):
-        """Test that probe can handle URLs (will fail but test structure)."""
-        # This will fail since we don't have a real RTSP server
-        # but it tests that the probe accepts URL paths
-        with pytest.raises(RuntimeError):
-            ffprobe.probe("rtsp://example.com/stream")
+    @patch('subprocess.run')
+    def test_probe_rtsp_url_mocked(self, mock_run, ffprobe):
+        """Test that probe can handle RTSP URLs (mocked)."""
+        # Mock ffprobe output for an RTSP stream
+        mock_output = {
+            "format": {
+                "filename": "rtsp://localhost:8554/test",
+                "format_name": "rtsp",
+                "format_long_name": "RTSP input",
+                "duration": "0.000000",
+                "size": "0",
+                "bit_rate": "0",
+                "nb_streams": 1
+            },
+            "streams": [{
+                "index": 0,
+                "codec_name": "h264",
+                "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+                "codec_type": "video",
+                "width": 640,
+                "height": 480,
+                "coded_width": 640,
+                "coded_height": 480,
+                "pix_fmt": "yuv420p",
+                "avg_frame_rate": "30/1",
+                "time_base": "1/90000"
+            }]
+        }
+        
+        mock_result = MagicMock()
+        mock_result.stdout = json.dumps(mock_output)
+        mock_result.returncode = 0
+        mock_run.return_value = mock_result
+        
+        # Test probing RTSP URL
+        info = ffprobe.probe("rtsp://localhost:8554/test")
+        
+        # Verify results
+        assert isinstance(info, VideoInfo)
+        assert info.filename == "rtsp://localhost:8554/test"
+        assert info.format_name == "rtsp"
+        assert info.nb_streams == 1
+        
+        # Check video stream
+        video_stream = ffprobe.get_primary_video_stream(info)
+        assert video_stream is not None
+        assert video_stream.codec_type == "video"
+        assert video_stream.codec_name == "h264"
+        assert video_stream.width == 640
+        assert video_stream.height == 480
+    
+    def test_probe_invalid_rtsp_url(self, ffprobe):
+        """Test that probe fails gracefully on invalid RTSP URL."""
+        # This should fail quickly without hanging
+        with pytest.raises(RuntimeError, match="Failed to probe video"):
+            # Use a non-routable IP to ensure quick failure
+            ffprobe.probe("rtsp://192.0.2.1:554/invalid")
     
     @pytest.mark.skipif(
         subprocess.run(["which", "ffprobe"], capture_output=True).returncode != 0,

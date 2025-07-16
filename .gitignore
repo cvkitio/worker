@@ -33,3 +33,8 @@ models/
 logs/
 *.jsonl
 timing_measurements.*
+
+# Build artifacts
+build/
+dist/
+*.egg-info/

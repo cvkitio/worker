@@ -51,16 +51,15 @@ class FrameWorker:
     def preprocess_frame(self, frame):
         # Apply any preprocessing steps defined in the configuration
         for preprocessor in self.preprocessors:
-            match preprocessor["type"]:
-                case "resize":
-                    width = preprocessor.get("width")
-                    height = preprocessor.get("height")
-                    # Convert to int if provided, otherwise keep as None
-                    width = int(width) if width is not None else None
-                    height = int(height) if height is not None else None
-                    frame = resize_frame(frame, width, height)
-                case "grayscale":
-                    frame = convert_to_grayscale(frame)
+            if preprocessor["type"] == "resize":
+                width = preprocessor.get("width")
+                height = preprocessor.get("height")
+                # Convert to int if provided, otherwise keep as None
+                width = int(width) if width is not None else None
+                height = int(height) if height is not None else None
+                frame = resize_frame(frame, width, height)
+            elif preprocessor["type"] == "grayscale":
+                frame = convert_to_grayscale(frame)
             # Add more preprocessing steps as needed
         return frame
     

@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 from unittest.mock import Mock, patch
 from cvkitworker.detectors.frame_worker import FrameWorker
+from cvkitworker.preprocessors.image_processing import resize_frame, convert_to_grayscale
 
 
 class TestResizeAspectRatio:
@@ -29,7 +30,7 @@ class TestResizeAspectRatio:
         frame = self.create_test_frame(1920, 1080)
         
         # Resize to width 640, should maintain aspect ratio
-        resized = self.frame_worker._resize_frame(frame, 640, None)
+        resized = resize_frame(frame, 640, None)
         
         # Expected height: 640 * (1080/1920) = 360
         assert resized.shape[1] == 640  # width
@@ -41,7 +42,7 @@ class TestResizeAspectRatio:
         frame = self.create_test_frame(1920, 1080)
         
         # Resize to height 720, should maintain aspect ratio
-        resized = self.frame_worker._resize_frame(frame, None, 720)
+        resized = resize_frame(frame, None, 720)
         
         # Expected width: 720 * (1920/1080) = 1280
         assert resized.shape[1] == 1280  # width
@@ -52,7 +53,7 @@ class TestResizeAspectRatio:
         frame = self.create_test_frame(1920, 1080)
         
         # Resize to 640x480 (may distort)
-        resized = self.frame_worker._resize_frame(frame, 640, 480)
+        resized = resize_frame(frame, 640, 480)
         
         assert resized.shape[1] == 640  # width
         assert resized.shape[0] == 480  # height
@@ -62,7 +63,7 @@ class TestResizeAspectRatio:
         frame = self.create_test_frame(1920, 1080)
         
         # No resize should return original frame
-        resized = self.frame_worker._resize_frame(frame, None, None)
+        resized = resize_frame(frame, None, None)
         
         assert resized.shape == frame.shape
         assert np.array_equal(resized, frame)
@@ -118,7 +119,7 @@ class TestResizeAspectRatio:
         
         for orig_w, orig_h, target_w, expected_h in test_cases:
             frame = self.create_test_frame(orig_w, orig_h)
-            resized = self.frame_worker._resize_frame(frame, target_w, None)
+            resized = resize_frame(frame, target_w, None)
             
             assert resized.shape[1] == target_w
             assert resized.shape[0] == expected_h

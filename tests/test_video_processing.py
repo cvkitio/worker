@@ -10,6 +10,7 @@ import tempfile
 import time
 import subprocess
 import sys
+import pytest
 from pathlib import Path
 from unittest.mock import patch
 import threading
@@ -19,6 +20,9 @@ import signal
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 
+@pytest.mark.integration
+@pytest.mark.video
+@pytest.mark.slow
 class TestVideoProcessing(unittest.TestCase):
     """Test video file input and processing."""
     
@@ -335,6 +339,9 @@ class TestVideoProcessing(unittest.TestCase):
         )
 
 
+@pytest.mark.integration
+@pytest.mark.video
+@pytest.mark.slow
 class TestVideoProcessingIntegration(unittest.TestCase):
     """Integration tests for video processing workflow."""
     

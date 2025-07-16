@@ -16,22 +16,24 @@ Classifier: Programming Language :: Python :: 3.11
 Classifier: Programming Language :: Python :: 3.12
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
-Requires-Dist: certifi==2025.4.26
-Requires-Dist: charset-normalizer==3.4.2
+Requires-Dist: certifi>=2024.0.0
+Requires-Dist: charset-normalizer>=3.0.0
 Requires-Dist: dlib<21.0.0,>=19.24.0
-Requires-Dist: idna==3.10
-Requires-Dist: kagglehub==0.3.12
-Requires-Dist: loguru==0.7.3
+Requires-Dist: idna>=3.0
+Requires-Dist: kagglehub>=0.2.9
+Requires-Dist: loguru>=0.7.0
 Requires-Dist: numpy<3.0.0,>=1.24.0
-Requires-Dist: opencv-python==4.11.0.86
-Requires-Dist: packaging==25.0
-Requires-Dist: PyYAML==6.0.2
-Requires-Dist: requests==2.32.3
-Requires-Dist: tqdm==4.67.1
-Requires-Dist: urllib3==2.4.0
+Requires-Dist: opencv-python>=4.8.0
+Requires-Dist: packaging>=20.0
+Requires-Dist: psutil>=5.9.0
+Requires-Dist: PyYAML>=6.0
+Requires-Dist: requests>=2.25.0
+Requires-Dist: tqdm>=4.60.0
+Requires-Dist: urllib3<3.0.0,>=1.26.0
 Provides-Extra: dev
 Requires-Dist: pytest>=6.0; extra == "dev"
 Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: pytest-timeout; extra == "dev"
 Requires-Dist: black; extra == "dev"
 Requires-Dist: flake8; extra == "dev"
 Requires-Dist: mypy; extra == "dev"
@@ -78,6 +80,18 @@ pip install -e .
 ```bash
 pip install cvkitworker
 ```
+
+### CI/CD Status
+
+⚠️ **Note**: GitHub Actions CI tests are currently failing due to timeout issues with dlib compilation. This needs to be addressed:
+
+**TODO**:
+- [ ] Consider using pre-built dlib wheels or Docker images
+- [ ] Investigate alternative face detection libraries that are faster to install
+- [ ] Split tests into unit and integration tests with separate workflows
+- [ ] Add matrix strategy to test different components separately
+
+The tests pass locally but timeout in CI due to the long compilation time of dlib from source.
 
 ## Usage
 

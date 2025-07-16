@@ -8,6 +8,7 @@ import os
 import json
 import tempfile
 import sys
+import pytest
 from pathlib import Path
 import cv2
 
@@ -15,6 +16,9 @@ import cv2
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 
+@pytest.mark.integration
+@pytest.mark.video
+@pytest.mark.slow
 class TestVideoSimple(unittest.TestCase):
     """Simple tests for video file processing."""
     

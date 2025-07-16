@@ -10,12 +10,16 @@ import tempfile
 import subprocess
 import sys
 import signal
+import pytest
 from pathlib import Path
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 
+@pytest.mark.integration
+@pytest.mark.video
+@pytest.mark.slow
 class TestVideoIntegration(unittest.TestCase):
     """Integration test for complete video processing pipeline."""
     

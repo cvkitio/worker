@@ -1,8 +1,11 @@
 # cvkit.io worker
 
-A worker for performing real time computer vision related operations and generating events optimized to run as a container.
+A worker as part of the cvkit.io platform for performing real time computer vision related operations and generating events optimized to run as a container.
 
-One of the key considerations for this package is that it can manage complex chains of computer vision tasks without blocking the main frame processing loop.
+One of the key considerations for this package is that it can manage complex chains of computer vision tasks in real time without blocking the main frame processing loop. 
+
+Computer vision tasks are both highly compute (CPU and GPU) intensive and can take time to perform. In a real time environment it is critical that these
+don't block the main process and can be distrbuted across CPUs and GPUs on a single machine or across nodes in a cluster.
 
 Some examples:
 
@@ -17,6 +20,13 @@ Some examples:
         --> Extract the car features
             --> Does the car have a numberplate?
                 --> If the number plate matches a DB entry send a notification
+
+3. Was there a scene change?
+    --> Yes, was there a humanoid in it?
+        --> Yes, was it Bob?
+            --> No
+                --> Grab a frame and send it for understanding
+                  --> Send an alert with a description of the frame         
 
 ## Components
 

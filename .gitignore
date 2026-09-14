@@ -38,3 +38,29 @@ timing_measurements.*
 build/
 dist/
 *.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+test_env/
+env/
+
+# Testing cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary files
+tmp/
+# --- Credential guards. Never commit these. ---
+.env
+.env.local
+*.pem
+*.key
+credentials
+*-adminsdk-*.json
+.DS_Store
+
+# Raw Kaggle dataset dump — re-downloadable, not versioned.
+# Curated fixtures live in test_data_kaggle/.
+kaggle_faces/
